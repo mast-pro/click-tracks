@@ -6,6 +6,7 @@ A MAST Productions tool for music-video playback tracks. Drop in a song and it a
 - a count-in click locked to the song's tempo, which can carry on into the song
 - clicks over the ending and a "cut" call
 - export as MP3 (default: 44.1 kHz, 192 kbps) or WAV
+- drop in a whole set of songs at once and download them all in one .zip, each at its own tempo
 
 Everything runs in the browser. Tracks never leave the user's computer, and the page works offline once loaded.
 

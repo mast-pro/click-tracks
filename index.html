@@ -118,6 +118,24 @@ body:not(.has-track) .needs-track{opacity:.5}
 .drop .txt{flex:1 1 200px;min-width:0}
 .drop .txt strong{display:block;font-weight:500;font-size:15.5px;overflow-wrap:anywhere}
 .drop .txt span{color:var(--muted);font-size:13px}
+.tracks{list-style:none;margin:0 0 12px;padding:0;border-radius:14px;background:var(--panel-2);overflow:hidden}
+.tracks li{display:flex;align-items:center;border-top:1px solid var(--line);transition:background .15s}
+.tracks li:first-child{border-top:0}
+.tracks li[aria-current="true"]{background:var(--accent-soft)}
+.tracks .pick{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:11px 14px;border:0;background:transparent;text-align:left;cursor:pointer;border-radius:0}
+.tracks .pick:disabled{cursor:default}
+.tracks .ix{width:22px;flex:none;text-align:center;font-size:12px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.tracks li[aria-current="true"] .ix{color:var(--fg)}
+.tracks .tx{min-width:0;display:flex;flex-direction:column}
+.tracks .nm{font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tracks .mt{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tracks .mt.err{color:var(--warn)}
+.tracks .rm{width:30px;height:30px;flex:none;margin-right:10px;border:0;border-radius:50%;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.tracks .rm:hover{background:var(--fill-2);color:var(--fg)}
+.drop.compact{padding:12px 14px;gap:12px}
+.drop.compact .drop-icon{width:34px;height:34px}
+.drop.compact .drop-icon svg{width:16px;height:16px}
+.drop.compact .txt strong{font-size:14px}
 .status{font-size:13px;color:var(--muted);margin-top:12px}
 .status:empty{display:none}
 .status.err{color:var(--warn)}
@@ -262,15 +280,16 @@ table.ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin
   <div class="desk">
     <div class="col">
       <section class="card step" aria-labelledby="hTrack">
-        <h2 id="hTrack"><span class="num" aria-hidden="true">1</span>Choose a track</h2>
+        <h2 id="hTrack"><span class="num" aria-hidden="true">1</span>Choose tracks</h2>
+        <ul class="tracks" id="trackList" hidden></ul>
         <div class="drop" id="drop">
           <div class="drop-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
           <div class="txt">
-            <strong id="fileName">Drop a song here</strong>
-            <span id="fileInfo">MP3, WAV, AIFF, FLAC or M4A</span>
+            <strong id="fileName">Drop songs here</strong>
+            <span id="fileInfo">One song or a whole set · MP3, WAV, AIFF, FLAC or M4A</span>
           </div>
-          <label class="btn primary" for="songInput" id="chooseBtn">Choose track</label>
-          <input type="file" id="songInput" accept="audio/*,.mp3,.wav,.aif,.aiff,.flac,.m4a">
+          <label class="btn primary" for="songInput" id="chooseBtn">Choose tracks</label>
+          <input type="file" id="songInput" multiple accept="audio/*,.mp3,.wav,.aif,.aiff,.flac,.m4a">
         </div>
         <div class="status" id="status" role="status" aria-live="polite"></div>
       </section>
@@ -305,6 +324,7 @@ table.ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin
         <div class="dl-row">
           <div class="seg fmt" role="group" aria-label="File format"><button type="button" id="fMp3" aria-pressed="true">MP3</button><button type="button" id="fWav" aria-pressed="false">WAV</button></div>
           <button class="btn primary big" id="export" type="button" disabled>Download</button>
+          <button class="btn" id="exportOne" type="button" hidden>This track only</button>
         </div>
         <details class="mini" id="qFold">
           <summary>Quality <span id="qSum"></span></summary>
@@ -708,7 +728,8 @@ const S = {
   songBytes:null, songName:"", song:null, an:null,
   bpm:null, bpmSource:"", tagBpm:null, grid:null,
   sounds:{}, out:null, plan:null, view:"all",
-  ctx:null, src:null, playStart:0, playOffset:0, playing:false, raf:0
+  ctx:null, src:null, playStart:0, playOffset:0, playing:false, raf:0,
+  tracks:[], cur:-1, tid:0, busy:false
 };
 try{ const saved = JSON.parse(localStorage.getItem("clickslate.settings.v3")||"null"); if(saved) Object.assign(S.set, saved);}catch(e){}
 S.rate=S.set.rate===48000?48000:44100;
@@ -1063,7 +1084,7 @@ function rebuild(){
   renderStrip(); renderEvents(); updateMeta(); draw();
   $("limNote").hidden=!(S.out && S.out.limited>0);
   document.body.classList.toggle("has-track", !!S.out);
-  if(S.an) setStatus("Ready. Have a listen, then download.");
+  if(S.an && !S.busy){ const n=readyTracks().length; setStatus(n>1?n+" tracks ready. Pick one to listen, or download them all.":"Ready. Have a listen, then download."); }
 }
 
 /* ---------- playback ---------- */
@@ -1130,25 +1151,60 @@ async function buildAudio(onProgress){
   return {name:nm+"_mast_click_track.wav", data:wavBytes(o.L,o.R,o.sr,S.bits), type:"audio/wav"};
 }
 async function buildZip(onProgress){ return zip([await buildAudio(onProgress)]); }
+// Build every ready track with the shared settings and its own tempo, one at a time to keep memory low.
+async function buildAll(onProgress){
+  const list=readyTracks(), keep={song:S.song,an:S.an,bpm:S.bpm,grid:S.grid,songName:S.songName,out:S.out,plan:S.plan,tagBpm:S.tagBpm}, files=[], used=new Set();
+  try{
+    for(let i=0;i<list.length;i++){
+      const t=list[i]; onProgress(i,list.length,0);
+      S.song=(i===list.indexOf(S.tracks[S.cur])&&keep.song)?keep.song:await decode(t.bytes,S.rate);
+      S.an=t.an; S.bpm=t.bpm; S.songName=t.name; computeGrid(); S.plan=makePlan(); mix();
+      const f=await buildAudio(x=>onProgress(i,list.length,x));
+      let nm=f.name, k=2; while(used.has(nm.toLowerCase())) nm=f.name.replace(/(\.[^.]+)$/," ("+(k++)+")$1"); used.add(nm.toLowerCase());
+      files.push({name:nm,data:f.data}); S.out=null; await tick();
+    }
+  } finally { Object.assign(S,keep); }
+  return zip(files);
+}
+async function saveBlob(blob,name){
+  if(STANDALONE){ const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=name; document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),60000); return; }
+  await downloads.save({filename:name, data:blob});
+}
 // Inside Claude, files go through the viewer's save prompt (zip only). Opened as a plain file in a browser, it saves the audio directly.
 const STANDALONE = !window.claude;
 let downloads=null;
 (async()=>{ try{ if(window.claude&&window.claude.use) downloads=await window.claude.use("downloads"); }catch(e){ downloads=null; } updateExport(); })();
 function updateExport(){
-  const ready=!!S.out, mp3=S.set.fmt==="mp3", F=mp3?"MP3":"WAV";
+  const ready=!!S.out, mp3=S.set.fmt==="mp3", F=mp3?"MP3":"WAV", many=readyTracks().length;
   $("fWav").setAttribute("aria-pressed",String(!mp3)); $("fMp3").setAttribute("aria-pressed",String(mp3));
   $("bitsWrap").hidden=mp3; $("kbpsWrap").hidden=!mp3; $("kbps").value=String(S.set.kbps);
-  $("export").textContent=STANDALONE?"Download "+F:"Download "+F+" (.zip)";
+  $("export").textContent= many>1 ? "Download all "+many+" ("+F+", .zip)" : (STANDALONE?"Download "+F:"Download "+F+" (.zip)");
+  $("exportOne").hidden=!(many>1); $("exportOne").disabled=!ready||S.busy||!(downloads||STANDALONE);
   $("qSum").textContent=F+" · "+(S.rate===48000?"48":"44.1")+" kHz · "+(mp3?S.set.kbps+" kbps":S.bits+"-bit");
-  $("export").disabled=!ready || !(downloads||STANDALONE);
-  const why=STANDALONE?"Saves the "+F+" to your downloads folder.":"Claude pages can only save .zip files, so the "+F+" comes inside a .zip.";
+  $("export").disabled=!ready || S.busy || !(downloads||STANDALONE);
+  const why= many>1 ? "Every track gets the same layout and its own tempo. They download together in one .zip." : (STANDALONE?"Saves the "+F+" to your downloads folder.":"Claude pages can only save .zip files, so the "+F+" comes inside a .zip.");
   if(!ready) $("expNote").textContent="Choose a track first.";
   else if(!downloads&&!STANDALONE) $("expNote").textContent="Saving files isn’t available in this view. Open this page in Claude to download.";
   else if(mp3 && !window.lamejs) $("expNote").textContent="The MP3 encoder didn’t load. Reload the page to try again, or export a WAV.";
   else $("expNote").textContent=why;
 }
 $("export").onclick=async()=>{
-  if(!S.out||!(downloads||STANDALONE)) return; const btn=$("export"); btn.disabled=true; const old=btn.textContent; btn.textContent=S.set.fmt==="mp3"?"Encoding MP3…":"Packing…";
+  if(readyTracks().length>1) return exportAll();
+  return exportCurrent($("export"));
+};
+$("exportOne").onclick=()=>exportCurrent($("exportOne"));
+async function exportAll(){
+  if(!S.out||!(downloads||STANDALONE)) return; stop();
+  const btn=$("export"), one=$("exportOne"), old=btn.textContent; btn.disabled=true; one.disabled=true;
+  const name="MAST click tracks.zip";
+  try{
+    const blob=await buildAll((i,n,f)=>{ btn.textContent="Track "+(i+1)+" of "+n+(S.set.fmt==="mp3"?" · "+Math.round(f*100)+"%":""); });
+    btn.textContent="Saving…"; await saveBlob(blob,name); setStatus("Saved "+name);
+  }catch(e){ const c=e&&e.code; if(c==="declined") setStatus("Download cancelled."); else if(c==="mp3_missing") setStatus("The MP3 encoder didn’t load. Reload the page to try again, or export a WAV.",true); else if(c==="rate_limited") setStatus("A save prompt is already open. Finish that one first.",true); else setStatus("Couldn’t build the tracks ("+(c||(e&&e.message)||"error")+").",true); }
+  btn.textContent=old; btn.disabled=false; one.disabled=false; rebuild();
+}
+async function exportCurrent(btn){
+  if(!S.out||!(downloads||STANDALONE)) return; btn.disabled=true; const old=btn.textContent; btn.textContent=S.set.fmt==="mp3"?"Encoding MP3…":"Packing…";
   await new Promise(r=>setTimeout(r,30));
   const prog=f=>{ btn.textContent="Encoding MP3… "+Math.round(f*100)+"%"; };
   if(STANDALONE){
@@ -1159,34 +1215,106 @@ $("export").onclick=async()=>{
   try{ const blob=await buildZip(prog); btn.textContent="Saving…"; await downloads.save({filename:baseName()+"_mast_click_track.zip", data:blob}); setStatus("Saved "+baseName()+"_mast_click_track.zip"); }
   catch(e){ const c=e&&e.code; if(c==="declined") setStatus("Download cancelled."); else if(c==="mp3_missing") setStatus("The MP3 encoder didn’t load. Reload the page to try again, or export a WAV.",true); else if(c==="rate_limited") setStatus("A save prompt is already open. Finish that one first.",true); else setStatus("Couldn’t save the file ("+(c||(e&&e.message)||"error")+").",true); }
   btn.textContent=old; btn.disabled=false;
-};
-
-/* ---------- loading a track ---------- */
-async function loadSong(file){
-  stop(); S.playOffset=0;
-  setStatus("Reading "+file.name+"…");
-  $("fileName").textContent=file.name; $("fileInfo").textContent="Decoding…";
-  try{
-    const bytes=await file.arrayBuffer();
-    S.songBytes=bytes; S.songName=file.name; S.tagBpm=readTbpm(bytes);
-    await new Promise(r=>setTimeout(r,20));
-    S.song=await decode(bytes,S.rate);
-    setStatus("Finding the tempo and beat grid…"); await new Promise(r=>setTimeout(r,20));
-    S.an=analyse(S.song);
-    pickTempo();
-    computeGrid();
-    $("fileInfo").textContent=fmt(S.song.duration)+" · "+S.song.numberOfChannels+" ch · song audio "+fmt(S.an.audioStart)+" to "+fmt(S.an.audioEnd);
-    $("bpmIn").disabled=false; $("bpmIn").value=+S.bpm.toFixed(2); $("redetect").disabled=false;
-    ["play","playStart","playEnd"].forEach(id=>$(id).disabled=false);
-    $("tlNote").textContent=S.songName; $("chooseBtn").textContent="Change track";
-    rebuild(); updateExport();
-  }catch(e){ console.error(e); S.song=null; S.an=null; S.out=null; $("fileInfo").textContent="Couldn’t read this file."; setStatus((e&&e.message&&!/decode/i.test(e.message)?e.message:"This file couldn’t be decoded. Try exporting it as WAV or MP3."),true); rebuild(); updateExport(); }
 }
-$("songInput").onchange=e=>{ const f=e.target.files[0]; if(f) loadSong(f); };
+
+/* ---------- tracks: one song or a whole set ---------- */
+const tick=()=>new Promise(r=>setTimeout(r,15));
+const AUDIO_RE=/\.(mp3|wav|aiff?|flac|m4a|aac|ogg|oga|opus)$/i;
+function readyTracks(){ return S.tracks.filter(t=>t.status==="ready"); }
+function syncTrack(){ const t=S.tracks[S.cur]; if(t){ t.bpm=S.bpm; t.bpmSource=S.bpmSource; } renderTracks(); }
+function showTagNote(){
+  const tn=$("tagNote"), ub=$("useTag");
+  if(S.tagBpm && S.bpm && Math.abs(S.tagBpm-S.bpm)>0.5 && S.bpmSource==="detected"){ tn.hidden=false; $("tagTxt").textContent="The file’s tempo tag says "+(+S.tagBpm.toFixed(2))+" BPM, but the beats in the audio measure "+(+S.bpm.toFixed(2))+". Using the audio."; ub.textContent="Use "+(+S.tagBpm.toFixed(2)); }
+  else tn.hidden=true;
+}
+function renderTracks(){ // update rows in place so clicks are never lost to a redraw
+  const ul=$("trackList"), n=S.tracks.length;
+  ul.hidden=!n; $("drop").classList.toggle("compact",n>0);
+  $("fileName").textContent=n?"Add more songs":"Drop songs here";
+  $("fileInfo").textContent=n?"Drop them here, or choose more":"One song or a whole set · MP3, WAV, AIFF, FLAC or M4A";
+  $("chooseBtn").textContent=n?"Add tracks":"Choose tracks";
+  const keep=new Set(S.tracks.map(t=>t.id));
+  for(const li of [...ul.children]) if(!keep.has(+li.dataset.id)) li.remove();
+  S.tracks.forEach((t,i)=>{
+    let li=ul.querySelector('li[data-id="'+t.id+'"]');
+    if(!li){
+      li=document.createElement("li"); li.dataset.id=t.id;
+      li.innerHTML='<button type="button" class="pick"><span class="ix"></span><span class="tx"><span class="nm"></span><span class="mt"></span></span></button><button type="button" class="rm">×</button>';
+      li.querySelector(".nm").textContent=t.name.replace(/\.[^.]+$/,"");
+      li.querySelector(".pick").setAttribute("aria-label","Preview "+t.name);
+      li.querySelector(".rm").setAttribute("aria-label","Remove "+t.name);
+      li.querySelector(".pick").onclick=()=>selectTrack(S.tracks.findIndex(x=>x.id===t.id));
+      li.querySelector(".rm").onclick=()=>removeTrack(t.id);
+    }
+    if(ul.children[i]!==li) ul.insertBefore(li, ul.children[i]||null);
+    li.setAttribute("aria-current",String(i===S.cur));
+    li.querySelector(".pick").disabled=t.status!=="ready";
+    li.querySelector(".ix").textContent=String(i+1);
+    const mt=li.querySelector(".mt");
+    mt.classList.toggle("err",t.status==="error");
+    mt.textContent= t.status==="ready" ? (+t.bpm.toFixed(2))+" BPM · "+fmt(t.dur).replace(/\.\d+$/,"")
+      : t.status==="error" ? (t.err||"Couldn’t read this file")
+      : t.status==="analysing" ? "Finding the tempo…" : "Waiting…";
+  });
+}
+function clearCurrent(){
+  stop(); S.playOffset=0; S.cur=-1; S.song=null; S.an=null; S.out=null; S.songBytes=null; S.songName=""; S.bpm=null; S.tagBpm=null; S.bpmSource=""; S.outBuf=null;
+  $("bpmIn").disabled=true; $("bpmIn").value=""; $("redetect").disabled=true; $("tagNote").hidden=true;
+  ["play","playStart","playEnd"].forEach(id=>$(id).disabled=true); $("tlNote").textContent="";
+}
+async function selectTrack(i, buf){
+  const t=S.tracks[i]; if(!t||t.status!=="ready") return;
+  stop(); S.playOffset=0; S.cur=i; renderTracks();
+  try{ S.song = buf || await decode(t.bytes,S.rate); }catch(e){ t.status="error"; t.err="Couldn’t read this file"; clearCurrent(); renderTracks(); rebuild(); updateExport(); return; }
+  S.songBytes=t.bytes; S.songName=t.name; S.an=t.an; S.tagBpm=t.tagBpm; S.bpm=t.bpm; S.bpmSource=t.bpmSource; S.outBuf=null;
+  computeGrid(); showTagNote();
+  $("bpmIn").disabled=false; $("bpmIn").value=+S.bpm.toFixed(2); $("redetect").disabled=false;
+  ["play","playStart","playEnd"].forEach(id=>$(id).disabled=false);
+  $("tlNote").textContent=t.name;
+  rebuild(); updateExport();
+}
+function removeTrack(id){
+  const i=S.tracks.findIndex(t=>t.id===id); if(i<0) return;
+  const wasCur=i===S.cur; S.tracks.splice(i,1);
+  if(wasCur){ clearCurrent(); const j=S.tracks.findIndex(t=>t.status==="ready"); renderTracks(); if(j>=0) selectTrack(j); else { rebuild(); updateExport(); } }
+  else { if(i<S.cur) S.cur--; renderTracks(); updateExport(); }
+  if(!S.tracks.length) setStatus("");
+}
+function addFiles(list){
+  const files=[...list].filter(f=>(f.type&&f.type.startsWith("audio/"))||AUDIO_RE.test(f.name));
+  if(!files.length){ setStatus("Those files don’t look like audio. Try MP3, WAV, AIFF, FLAC or M4A.",true); return; }
+  for(const f of files) S.tracks.push({id:++S.tid, name:f.name, file:f, status:"queued"});
+  renderTracks(); processQueue();
+}
+async function processQueue(){
+  if(S.busy) return; S.busy=true; let t;
+  while((t=S.tracks.find(x=>x.status==="queued"))){
+    t.status="analysing"; renderTracks();
+    const left=S.tracks.filter(x=>x.status==="queued"||x.status==="analysing").length;
+    setStatus(left>1?"Finding the tempo… "+left+" tracks to go":"Finding the tempo…");
+    try{
+      t.bytes=await t.file.arrayBuffer(); t.file=null; t.tagBpm=readTbpm(t.bytes); await tick();
+      const buf=await decode(t.bytes,S.rate); await tick();
+      t.an=analyse(buf); t.dur=buf.duration;
+      let b=estimateTempo(t.an,t.tagBpm); if(S.snap) b=Math.round(b); t.bpm=b; t.bpmSource="detected";
+      t.status="ready";
+      if(!S.tracks.includes(t)) continue;           // removed while analysing
+      if(S.cur<0) await selectTrack(S.tracks.indexOf(t), buf);
+    }catch(e){ console.error(e); t.status="error"; t.err=(e&&e.message&&!/decode|unable|EncodingError/i.test(e.message))?e.message:"Couldn’t read this file"; }
+    renderTracks(); updateExport();
+  }
+  S.busy=false; updateExport();
+  const n=readyTracks().length;
+  if(n>1) setStatus(n+" tracks ready. Pick one to listen, or download them all.");
+  else if(n===1) setStatus("Ready. Have a listen, then download.");
+  else if(S.tracks.length) setStatus("None of these files could be read. Try exporting them as WAV or MP3.",true);
+}
+async function loadSong(file){ addFiles([file]); }
+$("songInput").onchange=e=>{ if(e.target.files.length) addFiles(e.target.files); e.target.value=""; };
 const drop=$("drop");
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.classList.add("over");}));
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.classList.remove("over");}));
-drop.addEventListener("drop",e=>{ const f=e.dataTransfer.files[0]; if(f) loadSong(f); });
+drop.addEventListener("drop",e=>{ if(e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
 
 /* ---------- controls ---------- */
 const FIELDS=["pre","pause1","pause2","countIn","runIn","outroLead","outroAfter","cutDelay","post","clickDb","voiceDb","inNudge","outNudge"];
@@ -1203,9 +1331,9 @@ $("kbps").onchange=()=>{ S.set.kbps=parseInt($("kbps").value,10); saveSettings()
 $("setOn").onchange=()=>{ S.set.setOn=$("setOn").checked; $("pause2").disabled=!S.set.setOn; saveSettings(); stop(); S.playOffset=0; rebuild(); };
 $("snap").onchange=()=>{ S.snap=$("snap").checked; };
 $("resetSet").onclick=()=>{ const fmt=S.set.fmt, kbps=S.set.kbps; S.set={...DEFAULTS, fmt, kbps, rate:S.rate}; saveSettings(); fillSettings(); if(S.an) computeGrid(); stop(); S.playOffset=0; rebuild(); };
-$("bpmIn").addEventListener("change",()=>{ const v=parseFloat($("bpmIn").value); if(!(v>=40&&v<=240)){ $("bpmIn").value=S.bpm; return; } S.bpm=v; S.bpmSource="typed in"; computeGrid(); stop(); S.playOffset=0; rebuild(); });
-$("redetect").onclick=()=>{ if(!S.an) return; pickTempo(); $("bpmIn").value=+S.bpm.toFixed(2); computeGrid(); stop(); S.playOffset=0; rebuild(); };
-$("useTag").onclick=()=>{ if(!S.tagBpm) return; S.bpm=S.tagBpm; S.bpmSource="file tag"; $("bpmIn").value=+S.bpm.toFixed(2); $("tagNote").hidden=true; computeGrid(); stop(); S.playOffset=0; rebuild(); };
+$("bpmIn").addEventListener("change",()=>{ const v=parseFloat($("bpmIn").value); if(!(v>=40&&v<=240)){ $("bpmIn").value=S.bpm; return; } S.bpm=v; S.bpmSource="typed in"; showTagNote(); computeGrid(); syncTrack(); stop(); S.playOffset=0; rebuild(); });
+$("redetect").onclick=()=>{ if(!S.an) return; pickTempo(); $("bpmIn").value=+S.bpm.toFixed(2); computeGrid(); syncTrack(); stop(); S.playOffset=0; rebuild(); };
+$("useTag").onclick=()=>{ if(!S.tagBpm) return; S.bpm=S.tagBpm; S.bpmSource="file tag"; $("bpmIn").value=+S.bpm.toFixed(2); $("tagNote").hidden=true; computeGrid(); syncTrack(); stop(); S.playOffset=0; rebuild(); };
 $("rate").onchange=async()=>{ S.rate=parseInt($("rate").value,10); S.set.rate=S.rate; saveSettings(); updateExport(); stop(); S.outBuf=null; if(S.ctx){ try{S.ctx.close();}catch(e){} S.ctx=null; } await redecodeSounds(); if(S.songBytes){ S.song=await decode(S.songBytes,S.rate); } renderSounds(); rebuild(); };
 $("bits").onchange=()=>{ S.bits=parseInt($("bits").value,10); updateExport(); };
 function setView(v){ S.view=v; for(const [id,k] of [["zAll","all"],["zStart","start"],["zEnd","end"]]) $(id).setAttribute("aria-pressed", String(k===v)); draw(); }

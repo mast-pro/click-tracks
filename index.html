@@ -62,15 +62,14 @@ h1{font-family:var(--f-display);font-weight:500;font-size:clamp(2rem,4.6vw,2.9re
 .foot-in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;font-size:12.5px;font-weight:300}
 .foot-in b{font-weight:500;color:var(--white)}
 .desk{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
-@media (max-width:900px){.desk{grid-template-columns:minmax(0,1fr)}}
 .col{display:flex;flex-direction:column;gap:20px;min-width:0}
-section.card,details.card{background:var(--panel);border:0;border-radius:var(--r);padding:18px;min-width:0}
+section.card,details.card,div.card{background:var(--panel);border:0;border-radius:var(--r);padding:18px;min-width:0}
 h2{font-family:var(--f-display);font-weight:500;font-size:1.1rem;letter-spacing:0;margin:0 0 12px;color:var(--fg);display:flex;align-items:center;justify-content:space-between;gap:8px}
 h2 small{font-family:var(--f-body);font-size:12px;color:var(--muted);font-weight:400}
-.drop{display:flex;flex-wrap:wrap;align-items:center;gap:14px;border:1.5px dashed var(--accent);border-radius:var(--r);padding:18px;background:var(--panel-2);transition:border-color .15s}
+.drop{display:flex;flex-wrap:wrap;align-items:center;gap:14px;border:1.5px dashed var(--accent);border-radius:var(--r);padding:26px 22px;background:var(--panel-2);transition:border-color .15s}
 .drop.over{border-color:var(--fg)}
 .drop .txt{flex:1 1 220px;min-width:0}
-.drop .txt strong{display:block;font-weight:500;overflow-wrap:anywhere}
+.drop .txt strong{display:block;font-weight:500;font-size:16px;overflow-wrap:anywhere}
 .drop .txt span{color:var(--muted);font-size:13px}
 .btn{font:inherit;font-weight:500;font-size:14px;border-radius:var(--r);padding:9px 16px;border:1px solid var(--line);background:var(--panel-2);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
 .btn:hover{border-color:var(--accent)}
@@ -101,7 +100,7 @@ input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events
 .seg button{font:inherit;font-size:12.5px;padding:5px 12px;border:0;background:transparent;color:var(--muted);cursor:pointer;border-left:1px solid var(--line)}
 .seg button:first-child{border-left:0}
 .seg button[aria-pressed=true]{background:var(--press);color:var(--press-ink);font-weight:500}
-.canvas-box{position:relative;width:100%;height:190px;background:var(--panel-2);border-radius:var(--r);border:1px solid var(--line)}
+.canvas-box{margin-top:14px;position:relative;width:100%;height:190px;background:var(--panel-2);border-radius:var(--r);border:1px solid var(--line)}
 canvas#wave{display:block;width:100%;height:100%;cursor:crosshair}
 .transport{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
 .tc{font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;padding:5px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel-2)}
@@ -133,12 +132,12 @@ table.ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin
 .pill.ok{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .tagnote{margin-top:12px;font-size:12.5px;line-height:1.5;color:var(--fg);background:var(--panel-2);border-left:3px solid var(--accent);border-radius:0;padding:9px 11px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
 details.fold{padding:0}
-details.fold summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:16px 18px;border-radius:var(--r)}
-details.fold summary::-webkit-details-marker{display:none}
-details.fold summary::after{content:"";width:8px;height:8px;border-right:1.5px solid var(--fg);border-bottom:1.5px solid var(--fg);transform:rotate(45deg);margin:-4px 2px 0 auto;flex:none;transition:transform .15s}
-details.fold[open] summary::after{transform:rotate(-135deg);margin-top:4px}
-details.fold summary:hover .fold-title{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:4px}
-details.fold summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.fold summary,details.row summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:16px 18px;border-radius:var(--r)}
+details.fold summary::-webkit-details-marker,details.row summary::-webkit-details-marker{display:none}
+details.fold summary::after,details.row summary::after{content:"";width:8px;height:8px;border-right:1.5px solid var(--fg);border-bottom:1.5px solid var(--fg);transform:rotate(45deg);margin:-4px 2px 0 auto;flex:none;transition:transform .15s}
+details.fold[open] summary::after,details.row[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+details.fold summary:hover .fold-title,details.row summary:hover .fold-title{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:4px}
+details.fold summary:focus-visible,details.row summary:focus-visible,details.mini summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .fold-head{display:flex;flex-direction:column;gap:2px;min-width:0}
 .fold-title{font-weight:500;font-size:1.1rem}
 .fold-sum{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -151,8 +150,30 @@ details.fold summary:focus-visible{outline:2px solid var(--accent);outline-offse
 .sound .nm{font-size:13.5px;font-weight:500}
 .sound .src{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
 .sound .acts{display:flex;gap:6px}
-.seg.fmt{display:flex;margin-bottom:12px}
-.seg.fmt button{flex:1;padding:7px 12px;font-size:13.5px}
+.seg.fmt{display:inline-flex;flex:none}
+.seg.fmt button{padding:10px 18px;font-size:14px}
+.dl-row{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+.btn.big{flex:1 1 180px;justify-content:center;padding:12px 20px;font-size:15px}
+details.mini{margin-top:12px}
+details.mini summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--fg)}
+details.mini summary::-webkit-details-marker{display:none}
+details.mini summary span{color:var(--muted);font-weight:400}
+details.mini summary::after{content:"";width:6px;height:6px;border-right:1.5px solid var(--fg);border-bottom:1.5px solid var(--fg);transform:rotate(45deg);margin-top:-3px;transition:transform .15s}
+details.mini[open] summary::after{transform:rotate(-135deg);margin-top:3px}
+details.mini .export-opts{margin:12px 0 0}
+.step h2{justify-content:flex-start}
+.num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:600;margin-right:2px;flex:none}
+body:not(.has-track) .needs-track{opacity:.55}
+.col-label{margin:0 0 -8px;font-size:11px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.card.list{padding:0}
+details.row+details.row{border-top:1px solid var(--line)}
+.row-body{padding:0 18px 18px}
+.how .row-body p{max-width:70ch;margin:0 0 8px;font-size:13.5px}
+.fold-foot{display:flex;justify-content:flex-end;padding-top:12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bpm-edit{display:inline-flex;gap:8px}
+.bpm-edit input{width:78px!important}
+.status:empty{display:none}
 .export-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .export-opts label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 .export-opts select{font:inherit;font-size:13.5px;padding:6px 8px;border-radius:var(--r);border:1px solid var(--line);background:var(--panel-2);color:var(--fg)}
@@ -161,6 +182,9 @@ details.fold summary:focus-visible{outline:2px solid var(--accent);outline-offse
 .how{color:var(--fg);font-size:13.5px}
 .how p{max-width:70ch;margin:0 0 8px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+/* phones and narrow windows: one column, settings before the reference panels */
+@media (max-width:900px){.desk{display:flex;flex-direction:column}.col{display:contents}.desk .col>*{min-width:0;width:100%}.card.list{order:2}.col-label{margin:4px 0 -8px}}
+@media (max-width:600px){.strip,.strip-legend{display:none}}
 </style>
 
 <header class="band">
@@ -181,22 +205,22 @@ details.fold summary:focus-visible{outline:2px solid var(--accent);outline-offse
 
   <div class="desk">
     <div class="col">
-      <section class="card" aria-labelledby="hTrack">
-        <h2 id="hTrack">Track</h2>
+      <section class="card step" aria-labelledby="hTrack">
+        <h2 id="hTrack"><span class="num" aria-hidden="true">1</span>Choose a track</h2>
         <div class="drop" id="drop">
           <div class="txt">
-            <strong id="fileName">No track loaded</strong>
-            <span id="fileInfo">MP3, WAV, AIFF, FLAC or M4A. Drag it here or choose a file.</span>
+            <strong id="fileName">Drop a song here</strong>
+            <span id="fileInfo">MP3, WAV, AIFF, FLAC or M4A</span>
           </div>
-          <label class="btn primary" for="songInput">Choose track</label>
+          <label class="btn primary" for="songInput" id="chooseBtn">Choose track</label>
           <input type="file" id="songInput" accept="audio/*,.mp3,.wav,.aif,.aiff,.flac,.m4a">
         </div>
         <div class="status" id="status" role="status" aria-live="polite"></div>
       </section>
 
-      <section class="card" aria-labelledby="hTl">
+      <section class="card step needs-track" aria-labelledby="hTl">
         <div class="tl-head">
-          <h2 id="hTl" style="margin:0">Timeline <small id="tlNote">Load a track to see it laid out</small></h2>
+          <h2 id="hTl" style="margin:0"><span class="num" aria-hidden="true">2</span>Listen <small id="tlNote"></small></h2>
           <div class="seg" role="group" aria-label="Zoom">
             <button type="button" id="zAll" aria-pressed="true">Whole</button>
             <button type="button" id="zStart" aria-pressed="false">Start</button>
@@ -205,86 +229,97 @@ details.fold summary:focus-visible{outline:2px solid var(--accent);outline-offse
         </div>
         <div class="strip" id="strip" aria-label="Structure of the exported file"></div>
         <div class="strip-legend">
-          <span><i style="background:var(--accent)"></i>Voice call</span>
+          <span><i style="background:var(--accent)"></i>Voice</span>
           <span><i style="background:var(--click)"></i>Clicks</span>
-          <span><i style="background:color-mix(in srgb,var(--song) 40%,var(--panel-2))"></i>Your track</span>
+          <span><i style="background:color-mix(in srgb,var(--song) 40%,var(--panel-2))"></i>Song</span>
           <span><i style="background:var(--panel-2);border:1px solid var(--line)"></i>Silence</span>
         </div>
-        <div style="height:14px"></div>
-        <div class="canvas-box"><canvas id="wave" tabindex="0" aria-label="Waveform of the exported file. Click to play from a point."></canvas></div>
+        <div class="canvas-box"><canvas id="wave" tabindex="0" title="Click to play from here" aria-label="Waveform of the finished track. Click to play from a point."></canvas></div>
         <div class="transport">
-          <button class="btn" id="play" type="button" disabled>▶ Play</button>
-          <button class="btn small" id="playStart" type="button" disabled>Hear the start</button>
-          <button class="btn small" id="playEnd" type="button" disabled>Hear the end</button>
+          <button class="btn primary" id="play" type="button" disabled>▶ Play</button>
+          <button class="btn" id="playStart" type="button" disabled>Hear the start</button>
+          <button class="btn" id="playEnd" type="button" disabled>Hear the end</button>
           <span class="tc" id="tc">00:00.000</span>
-          <span class="hint">Click the waveform to play from that point.</span>
         </div>
       </section>
 
-      <section class="card" aria-labelledby="hEv">
-        <h2 id="hEv">Cue sheet <small>Times in the exported file</small></h2>
-        <div class="ev-wrap"><table class="ev" id="events"></table></div>
+      <section class="card step needs-track" aria-labelledby="hExp">
+        <h2 id="hExp"><span class="num" aria-hidden="true">3</span>Download</h2>
+        <div class="dl-row">
+          <div class="seg fmt" role="group" aria-label="File format"><button type="button" id="fMp3" aria-pressed="true">MP3</button><button type="button" id="fWav" aria-pressed="false">WAV</button></div>
+          <button class="btn primary big" id="export" type="button" disabled>Download</button>
+        </div>
+        <details class="mini" id="qFold">
+          <summary>Quality <span id="qSum"></span></summary>
+          <div class="export-opts">
+            <label for="rate">Sample rate<select id="rate"><option value="44100">44.1 kHz</option><option value="48000">48 kHz (video)</option></select></label>
+            <label for="bits" id="bitsWrap">Bit depth<select id="bits"><option value="24">24-bit</option><option value="16">16-bit</option></select></label>
+            <label for="kbps" id="kbpsWrap" hidden>Bitrate<select id="kbps"><option value="192">192 kbps</option><option value="256">256 kbps</option><option value="320">320 kbps</option></select></label>
+          </div>
+        </details>
+        <p class="note" id="expNote"></p>
       </section>
 
-      <section class="card how" aria-labelledby="hHow">
-        <h2 id="hHow">How it lines up</h2>
-        <p>The tempo is measured from the drum and note attacks in the audio. If your DAW wrote a BPM tag into the file, it is used as a guide, and you’ll see a note if the two disagree. You can always type the BPM yourself.</p>
-        <p>The count-in is timed so the song’s first sound lands exactly where the next click would be. The outro clicks follow a beat grid fitted to the last 20 seconds, so they sit on the ending even if the tempo drifts. If either end feels early or late, nudge it in milliseconds; the length of one beat is shown under the tempo.</p>
-        <p>Everything runs in your browser. The track never leaves your computer.</p>
-      </section>
+      <div class="card list">
+        <details class="row" id="evFold">
+          <summary><span class="fold-head"><span class="fold-title">Cue sheet</span><span class="fold-sum">Every call and click, with its time</span></span></summary>
+          <div class="row-body ev-wrap"><table class="ev" id="events"></table></div>
+        </details>
+        <details class="row how" id="howFold">
+          <summary><span class="fold-head"><span class="fold-title">How it works</span><span class="fold-sum">Tempo, timing and privacy</span></span></summary>
+          <div class="row-body">
+            <p>The tempo is measured from the drum and note attacks in the audio. If your DAW wrote a BPM tag into the file, it is used as a guide, and you’ll see a note if the two disagree. You can always type the BPM yourself.</p>
+            <p>The count-in is timed so the song’s first sound lands exactly where the next click would be. The outro clicks follow a beat grid fitted to the last 20 seconds, so they sit on the ending even if the tempo drifts. If either end feels early or late, nudge it in Timing; the length of one beat is shown under the tempo.</p>
+            <p>Everything runs in your browser. The track never leaves your computer.</p>
+          </div>
+        </details>
+      </div>
     </div>
 
     <div class="col">
+      <p class="col-label">Settings</p>
       <section class="card" aria-labelledby="hTempo">
         <h2 id="hTempo">Tempo <span class="pill" id="bpmSrc">waiting</span></h2>
         <div class="bpm-row">
           <span class="bpm-big" id="bpmBig">—</span>
-          <label for="bpmIn" class="hint">BPM</label>
-          <input type="number" id="bpmIn" step="0.01" min="40" max="240" disabled>
-          <button class="btn small" id="redetect" type="button" disabled>Re-detect</button>
+          <span class="hint">BPM</span>
+          <span class="bpm-edit"><label for="bpmIn" class="sr">Tempo in BPM</label><input type="number" id="bpmIn" step="0.01" min="40" max="240" disabled>
+          <button class="btn small" id="redetect" type="button" disabled>Re-detect</button></span>
         </div>
         <p class="note" id="beatMs" style="margin-top:6px">One beat = — ms</p>
         <div class="tagnote" id="tagNote" hidden><span id="tagTxt"></span> <button class="btn small" id="useTag" type="button">Use tag</button></div>
-        <label class="check" style="margin-top:10px"><input type="checkbox" id="snap" checked> Round detected tempo to a whole BPM</label>
+        <label class="check" style="margin-top:10px"><input type="checkbox" id="snap" checked> Round to a whole BPM</label>
       </section>
 
-      <section class="card" aria-labelledby="hSet">
-        <h2 id="hSet">Layout <button class="btn small" id="resetSet" type="button">Reset to defaults</button></h2>
-        <div class="field"><label for="pre">Silence before “camera rolling”<small>seconds</small></label><input type="number" id="pre" step="0.05" min="0"></div>
-        <div class="field"><label for="pause1">Pause after “camera rolling”<small>seconds of silence before “set”</small></label><input type="number" id="pause1" step="0.05" min="0"></div>
-        <div class="field"><label for="pause2">Pause after “set”<small>seconds of silence before the first click</small></label><input type="number" id="pause2" step="0.05" min="0"></div>
-        <div class="field"><label for="countIn">Count-in clicks<small>before the song’s first beat</small></label><input type="number" id="countIn" step="1" min="0" max="64"></div>
-        <div class="field unit"><label for="runIn">Clicks carry on into the song<small>0 = stop when the song comes in</small></label><div class="uv"><input type="number" id="runIn" step="0.5" min="0"><select id="runInUnit" aria-label="Unit for clicks into the song"><option value="s">sec</option><option value="b">beats</option></select></div></div>
-        <div class="field unit"><label for="outroLead">Clicks come back in<small>before the song stops</small></label><div class="uv"><input type="number" id="outroLead" step="1" min="0"><select id="outroLeadUnit" aria-label="Unit for clicks before the end"><option value="b">beats</option><option value="s">sec</option></select></div></div>
-        <div class="field"><label for="outroAfter">Clicks after the song stops<small>counting the click on its last beat</small></label><input type="number" id="outroAfter" step="1" min="0" max="128"></div>
-        <div class="field"><label for="cutDelay">“Cut” after the last click<small>seconds</small></label><input type="number" id="cutDelay" step="0.01" min="0"></div>
-        <div class="field"><label for="post">Silence after “cut”<small>seconds</small></label><input type="number" id="post" step="0.1" min="0"></div>
-        <div class="field"><label for="inNudge">Nudge count-in<small>ms; + makes the song come in later</small></label><input type="number" id="inNudge" step="5"></div>
-        <div class="field"><label for="outNudge">Nudge outro clicks<small>ms; + moves them later</small></label><input type="number" id="outNudge" step="5"></div>
-        <label class="check"><input type="checkbox" id="setOn"> Say “set” before the clicks</label>
-      </section>
+      <details class="card fold" id="setFold">
+        <summary><span class="fold-head"><span class="fold-title">Timing</span><span class="fold-sum" id="setSum"></span></span></summary>
+        <div class="fold-body">
+            <div class="field"><label for="pre">Silence before “camera rolling”<small>seconds</small></label><input type="number" id="pre" step="0.05" min="0"></div>
+            <div class="field"><label for="pause1">Pause after “camera rolling”<small>seconds of silence before “set”</small></label><input type="number" id="pause1" step="0.05" min="0"></div>
+            <div class="field"><label for="pause2">Pause after “set”<small>seconds of silence before the first click</small></label><input type="number" id="pause2" step="0.05" min="0"></div>
+            <div class="field"><label for="countIn">Count-in clicks<small>before the song’s first beat</small></label><input type="number" id="countIn" step="1" min="0" max="64"></div>
+            <div class="field unit"><label for="runIn">Clicks carry on into the song<small>0 = stop when the song comes in</small></label><div class="uv"><input type="number" id="runIn" step="0.5" min="0"><select id="runInUnit" aria-label="Unit for clicks into the song"><option value="s">sec</option><option value="b">beats</option></select></div></div>
+            <div class="field unit"><label for="outroLead">Clicks come back in<small>before the song stops</small></label><div class="uv"><input type="number" id="outroLead" step="1" min="0"><select id="outroLeadUnit" aria-label="Unit for clicks before the end"><option value="b">beats</option><option value="s">sec</option></select></div></div>
+            <div class="field"><label for="outroAfter">Clicks after the song stops<small>counting the click on its last beat</small></label><input type="number" id="outroAfter" step="1" min="0" max="128"></div>
+            <div class="field"><label for="cutDelay">“Cut” after the last click<small>seconds</small></label><input type="number" id="cutDelay" step="0.01" min="0"></div>
+            <div class="field"><label for="post">Silence after “cut”<small>seconds</small></label><input type="number" id="post" step="0.1" min="0"></div>
+            <div class="field"><label for="inNudge">Nudge count-in<small>ms; + makes the song come in later</small></label><input type="number" id="inNudge" step="5"></div>
+            <div class="field"><label for="outNudge">Nudge outro clicks<small>ms; + moves them later</small></label><input type="number" id="outNudge" step="5"></div>
+            <label class="check"><input type="checkbox" id="setOn"> Say “set” before the clicks</label>
+            <div class="fold-foot"><button class="btn small" id="resetSet" type="button">Reset to defaults</button></div>
+        </div>
+      </details>
 
       <details class="card fold" id="sndFold">
         <summary><span class="fold-head"><span class="fold-title">Sounds and levels</span><span class="fold-sum" id="sndSum"></span></span></summary>
         <div class="fold-body">
           <div class="field"><label for="clickDb">Click level<small>dB, 0 = as in example</small></label><input type="number" id="clickDb" step="0.5" min="-40" max="12"></div>
           <div class="field"><label for="voiceDb">Voice level<small>dB, 0 = as in example</small></label><input type="number" id="voiceDb" step="0.5" min="-40" max="12"></div>
+          <p class="note" id="limNote" hidden>At these levels some clicks peak above 0 dB, so a limiter holds them just under. Lower the level if you want them untouched.</p>
           <div id="sounds" class="fold-sounds"></div>
           <p class="note">Built-in sounds were taken from your example. Replace any of them with your own recording.</p>
         </div>
       </details>
-
-      <section class="card" aria-labelledby="hExp">
-        <h2 id="hExp">Export</h2>
-        <div class="seg fmt" role="group" aria-label="File format"><button type="button" id="fWav" aria-pressed="true">WAV</button><button type="button" id="fMp3" aria-pressed="false">MP3</button></div>
-        <div class="export-opts">
-          <label for="rate">Sample rate<select id="rate"><option value="44100">44.1 kHz</option><option value="48000">48 kHz (video)</option></select></label>
-          <label for="bits" id="bitsWrap">Bit depth<select id="bits"><option value="24">24-bit</option><option value="16">16-bit</option></select></label>
-          <label for="kbps" id="kbpsWrap" hidden>Bitrate<select id="kbps"><option value="192">192 kbps</option><option value="256">256 kbps</option><option value="320">320 kbps</option></select></label>
-        </div>
-        <button class="btn primary" id="export" type="button" style="width:100%;justify-content:center" disabled>Download WAV (.zip)</button>
-        <p class="note" id="expNote">Load a track to enable this.</p>
-      </section>
     </div>
   </div>
 </div>
@@ -951,7 +986,7 @@ function renderEvents(){
 }
 function updateMeta(){
   $("mBpm").textContent=S.bpm?(+S.bpm.toFixed(2)).toString():"—";
-  $("mIn").textContent=S.plan?fmt(S.plan.songIn):"—";
+  $("mIn").textContent=S.an?fmt(S.plan.songIn):"—";
   $("mLen").textContent=S.an?fmt(S.plan.total):"—";
   $("bpmBig").textContent=S.bpm?(+S.bpm.toFixed(2)).toString():"—";
   $("beatMs").textContent=S.bpm?("One beat = "+Math.round(60000/S.bpm)+" ms · half a beat = "+Math.round(30000/S.bpm)+" ms"):"One beat = — ms";
@@ -961,13 +996,17 @@ function updateSndSum(){
   const f=v=>(v>0?"+":"")+v+" dB", n=Object.values(S.sounds).filter(x=>x.custom).length;
   $("sndSum").textContent="Click "+f(S.set.clickDb)+" · Voice "+f(S.set.voiceDb)+(n?" · "+n+" replaced":"");
 }
+function updateSetSum(){
+  const st=S.set; $("setSum").textContent=st.countIn+"-click count-in · "+st.outroAfter+" clicks after the end"+(st.setOn?"":" · no “set”");
+}
 function rebuild(){
-  updateSndSum();
+  updateSndSum(); updateSetSum();
   S.plan=makePlan();
   if(S.an && S.song) mix();
   renderStrip(); renderEvents(); updateMeta(); draw();
-  if(S.out && S.out.limited>0) setStatus("Ready. Some clicks or calls go over full scale at this level, so a limiter is holding those peaks just under 0 dB. Lower the click or voice level if you want them untouched.");
-  else if(S.an) setStatus("Ready. Play it through, then download.");
+  $("limNote").hidden=!(S.out && S.out.limited>0);
+  document.body.classList.toggle("has-track", !!S.out);
+  if(S.an) setStatus("Ready. Have a listen, then download.");
 }
 
 /* ---------- playback ---------- */
@@ -1042,9 +1081,10 @@ function updateExport(){
   $("fWav").setAttribute("aria-pressed",String(!mp3)); $("fMp3").setAttribute("aria-pressed",String(mp3));
   $("bitsWrap").hidden=mp3; $("kbpsWrap").hidden=!mp3; $("kbps").value=String(S.set.kbps);
   $("export").textContent=STANDALONE?"Download "+F:"Download "+F+" (.zip)";
+  $("qSum").textContent=F+" · "+(S.rate===48000?"48":"44.1")+" kHz · "+(mp3?S.set.kbps+" kbps":S.bits+"-bit");
   $("export").disabled=!ready || !(downloads||STANDALONE);
   const why=STANDALONE?"Saves the "+F+" to your downloads folder.":"Claude pages can only save .zip files, so the "+F+" comes inside a .zip.";
-  if(!ready) $("expNote").textContent="Load a track to enable this. "+why;
+  if(!ready) $("expNote").textContent="Choose a track first.";
   else if(!downloads&&!STANDALONE) $("expNote").textContent="Saving files isn’t available in this view. Open this page in Claude to download.";
   else if(mp3 && !window.lamejs) $("expNote").textContent="The MP3 encoder didn’t load. Reload the page to try again, or export a WAV.";
   else $("expNote").textContent=why;
@@ -1080,7 +1120,7 @@ async function loadSong(file){
     $("fileInfo").textContent=fmt(S.song.duration)+" · "+S.song.numberOfChannels+" ch · song audio "+fmt(S.an.audioStart)+" to "+fmt(S.an.audioEnd);
     $("bpmIn").disabled=false; $("bpmIn").value=+S.bpm.toFixed(2); $("redetect").disabled=false;
     ["play","playStart","playEnd"].forEach(id=>$(id).disabled=false);
-    $("tlNote").textContent=S.songName;
+    $("tlNote").textContent=S.songName; $("chooseBtn").textContent="Change track";
     rebuild(); updateExport();
   }catch(e){ console.error(e); S.song=null; S.an=null; S.out=null; $("fileInfo").textContent="Couldn’t read this file."; setStatus((e&&e.message&&!/decode/i.test(e.message)?e.message:"This file couldn’t be decoded. Try exporting it as WAV or MP3."),true); rebuild(); updateExport(); }
 }
@@ -1101,15 +1141,15 @@ for(const [k,u] of [["runIn","runInUnit"],["outroLead","outroLeadUnit"]]) $(u).o
   S.set[u]=nu; $(k).value=S.set[k]; $(k).step= nu==="s"?"0.5":"1"; saveSettings(); stop(); S.playOffset=0; rebuild(); };
 $("fWav").onclick=()=>{ S.set.fmt="wav"; saveSettings(); updateExport(); };
 $("fMp3").onclick=()=>{ S.set.fmt="mp3"; saveSettings(); updateExport(); };
-$("kbps").onchange=()=>{ S.set.kbps=parseInt($("kbps").value,10); saveSettings(); };
+$("kbps").onchange=()=>{ S.set.kbps=parseInt($("kbps").value,10); saveSettings(); updateExport(); };
 $("setOn").onchange=()=>{ S.set.setOn=$("setOn").checked; $("pause2").disabled=!S.set.setOn; saveSettings(); stop(); S.playOffset=0; rebuild(); };
 $("snap").onchange=()=>{ S.snap=$("snap").checked; };
 $("resetSet").onclick=()=>{ const fmt=S.set.fmt, kbps=S.set.kbps; S.set={...DEFAULTS, fmt, kbps, rate:S.rate}; saveSettings(); fillSettings(); if(S.an) computeGrid(); stop(); S.playOffset=0; rebuild(); };
 $("bpmIn").addEventListener("change",()=>{ const v=parseFloat($("bpmIn").value); if(!(v>=40&&v<=240)){ $("bpmIn").value=S.bpm; return; } S.bpm=v; S.bpmSource="typed in"; computeGrid(); stop(); S.playOffset=0; rebuild(); });
 $("redetect").onclick=()=>{ if(!S.an) return; pickTempo(); $("bpmIn").value=+S.bpm.toFixed(2); computeGrid(); stop(); S.playOffset=0; rebuild(); };
 $("useTag").onclick=()=>{ if(!S.tagBpm) return; S.bpm=S.tagBpm; S.bpmSource="file tag"; $("bpmIn").value=+S.bpm.toFixed(2); $("tagNote").hidden=true; computeGrid(); stop(); S.playOffset=0; rebuild(); };
-$("rate").onchange=async()=>{ S.rate=parseInt($("rate").value,10); S.set.rate=S.rate; saveSettings(); stop(); S.outBuf=null; if(S.ctx){ try{S.ctx.close();}catch(e){} S.ctx=null; } await redecodeSounds(); if(S.songBytes){ S.song=await decode(S.songBytes,S.rate); } renderSounds(); rebuild(); };
-$("bits").onchange=()=>{ S.bits=parseInt($("bits").value,10); };
+$("rate").onchange=async()=>{ S.rate=parseInt($("rate").value,10); S.set.rate=S.rate; saveSettings(); updateExport(); stop(); S.outBuf=null; if(S.ctx){ try{S.ctx.close();}catch(e){} S.ctx=null; } await redecodeSounds(); if(S.songBytes){ S.song=await decode(S.songBytes,S.rate); } renderSounds(); rebuild(); };
+$("bits").onchange=()=>{ S.bits=parseInt($("bits").value,10); updateExport(); };
 function setView(v){ S.view=v; for(const [id,k] of [["zAll","all"],["zStart","start"],["zEnd","end"]]) $(id).setAttribute("aria-pressed", String(k===v)); draw(); }
 $("zAll").onclick=()=>setView("all"); $("zStart").onclick=()=>setView("start"); $("zEnd").onclick=()=>setView("end");
 $("play").onclick=()=>{ if(S.playing) stop(); else playOut(S.playOffset>=S.plan.total-0.05?0:S.playOffset); };
@@ -1120,8 +1160,10 @@ window.addEventListener("resize",()=>draw());
 if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>draw());
 new MutationObserver(()=>draw()).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 
-try{ if(localStorage.getItem("clickslate.sndOpen")==="1") $("sndFold").open=true; }catch(e){}
-$("sndFold").addEventListener("toggle",()=>{ try{ localStorage.setItem("clickslate.sndOpen", $("sndFold").open?"1":"0"); }catch(e){} });
+for(const id of ["setFold","sndFold","qFold","evFold","howFold"]){ // remember which panels this viewer keeps open
+  try{ if(localStorage.getItem("clickslate.open."+id)==="1") $(id).open=true; }catch(e){}
+  $(id).addEventListener("toggle",()=>{ try{ localStorage.setItem("clickslate.open."+id, $(id).open?"1":"0"); }catch(e){} });
+}
 (async()=>{ fillSettings(); updateExport(); try{ await loadBuiltins(); }catch(e){ setStatus("Couldn’t load the built-in sounds in this browser.",true); } renderSounds(); rebuild(); })();
 window.ClickSlate={S, analyse, estimateTempo, computeGrid, makePlan, buildZip, loadSong};
 </script>

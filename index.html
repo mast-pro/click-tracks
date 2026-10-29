@@ -1008,8 +1008,8 @@ async function encodeMp3(L,R,sr,kbps,onProgress){
 function baseName(){ return (S.songName||"track").replace(/\.[^.]+$/,"").replace(/[\\/:*?"<>|]+/g,"_").trim()||"track"; }
 async function buildAudio(onProgress){
   const o=S.out, nm=baseName();
-  if(S.set.fmt==="mp3") return {name:nm+" - slate.mp3", data:await encodeMp3(o.L,o.R,o.sr,S.set.kbps,onProgress), type:"audio/mpeg"};
-  return {name:nm+" - slate.wav", data:wavBytes(o.L,o.R,o.sr,S.bits), type:"audio/wav"};
+  if(S.set.fmt==="mp3") return {name:nm+"_mast_click_track.mp3", data:await encodeMp3(o.L,o.R,o.sr,S.set.kbps,onProgress), type:"audio/mpeg"};
+  return {name:nm+"_mast_click_track.wav", data:wavBytes(o.L,o.R,o.sr,S.bits), type:"audio/wav"};
 }
 async function buildZip(onProgress){ return zip([await buildAudio(onProgress)]); }
 // Inside Claude, files go through the viewer's save prompt (zip only). Opened as a plain file in a browser, it saves the audio directly.
@@ -1037,7 +1037,7 @@ $("export").onclick=async()=>{
     catch(e){ setStatus(e&&e.code==="mp3_missing"?"The MP3 encoder didn’t load. Check your internet connection and reload, or export a WAV.":"Couldn’t save the file.",true); }
     btn.textContent=old; btn.disabled=false; return;
   }
-  try{ const blob=await buildZip(prog); btn.textContent="Saving…"; await downloads.save({filename:baseName()+" - slate.zip", data:blob}); setStatus("Saved "+baseName()+" - slate.zip"); }
+  try{ const blob=await buildZip(prog); btn.textContent="Saving…"; await downloads.save({filename:baseName()+"_mast_click_track.zip", data:blob}); setStatus("Saved "+baseName()+"_mast_click_track.zip"); }
   catch(e){ const c=e&&e.code; if(c==="declined") setStatus("Download cancelled."); else if(c==="mp3_missing") setStatus("The MP3 encoder didn’t load. Reload the page to try again, or export a WAV.",true); else if(c==="rate_limited") setStatus("A save prompt is already open. Finish that one first.",true); else setStatus("Couldn’t save the file ("+(c||(e&&e.message)||"error")+").",true); }
   btn.textContent=old; btn.disabled=false;
 };

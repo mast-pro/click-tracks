@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Click &amp; Slate</title>
+<title>Click Track Creator</title>
 </head>
 <body style="margin:0">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -153,7 +153,7 @@ table.ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin
   <div class="band-in">
     <div>
       <p class="eyebrow">MAST Productions</p>
-      <h1>Click &amp; Slate</h1>
+      <h1>Click Track Creator</h1>
       <p class="lede">Drop in a track and we’ll add the “camera rolling” and “set” calls, a count-in locked to the song’s tempo, clicks over the ending and a “cut”, ready for the shoot.</p>
     </div>
     <div class="slate-meta" aria-label="Current track">
@@ -272,7 +272,7 @@ table.ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin
     </div>
   </div>
 </div>
-<footer class="foot"><div class="foot-in"><span>Audio brought to you by <b>MAST Productions</b></span><span>Click &amp; Slate · runs in your browser, tracks stay on your computer</span></div></footer>
+<footer class="foot"><div class="foot-in"><span>Audio brought to you by <b>MAST Productions</b></span><span>Click Track Creator · runs in your browser, tracks stay on your computer</span></div></footer>
 
 <script>
 function lamejs(){function X(c){return new Int32Array(c)}function K(c){return new Float32Array(c)}function ca(c){if(1==c.length)return K(c[0]);var k=c[0];c=c.slice(1);for(var n=[],u=0;u<k;u++)n.push(ca(c));return n}function Ia(c){if(1==c.length)return X(c[0]);var k=c[0];c=c.slice(1);for(var n=[],u=0;u<k;u++)n.push(Ia(c));return n}function dc(c){if(1==c.length)return new Int16Array(c[0]);var k=c[0];c=c.slice(1);for(var n=[],u=0;u<k;u++)n.push(dc(c));return n}function Ob(c){if(1==c.length)return Array(c[0]);
@@ -931,7 +931,7 @@ function renderEvents(){
   rows.push([p.total,"End of file","var(--muted)"]);
   rows.sort((a,b)=>a[0]-b[0]);
   for(const [t,label,c] of rows){ const tr=document.createElement("tr"); const a=document.createElement("td"); a.className="t"; a.textContent=fmt(t); const b=document.createElement("td"); const dot=document.createElement("span"); dot.className="dot"; dot.style.background=c; b.append(dot, document.createTextNode(label)); tr.append(a,b); tb.append(tr); }
-  S.cueText=["Click & Slate cue sheet", "Track: "+(S.songName||"—"), "Tempo: "+(S.bpm?S.bpm.toFixed(2):"—")+" BPM ("+S.bpmSource+")", ""].concat(rows.map(r=>fmt(r[0])+"  "+r[1])).join("\r\n")+"\r\n";
+  S.cueText=["Click Track Creator cue sheet", "Track: "+(S.songName||"—"), "Tempo: "+(S.bpm?S.bpm.toFixed(2):"—")+" BPM ("+S.bpmSource+")", ""].concat(rows.map(r=>fmt(r[0])+"  "+r[1])).join("\r\n")+"\r\n";
 }
 function updateMeta(){
   $("mBpm").textContent=S.bpm?(+S.bpm.toFixed(2)).toString():"—";

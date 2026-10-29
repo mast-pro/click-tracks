@@ -1,4 +1,4 @@
-# Click & Slate
+# Click Track Creator
 
 A MAST Productions tool for music-video playback tracks. Drop in a song and it adds:
 

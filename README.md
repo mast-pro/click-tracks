@@ -9,6 +9,6 @@ A MAST Productions tool for music-video playback tracks. Drop in a song and it a
 
 Everything runs in the browser. Tracks never leave the user's computer, and the page works offline once loaded.
 
-**Live site:** https://rickyd-lab.github.io/click-and-slate/
+**Live site:** https://mast-pro.github.io/click-tracks/
 
 To update the site, replace `index.html` and commit to `main`. GitHub Pages republishes within a minute or two.
